@@ -36,8 +36,9 @@ const FormikInputNumber = (props) => {
       <InputNumber
         name={fieldName}
         value={value}
-        onValueChange={(e) => handleValueChange(e)}
+        onChange={(e) => handleValueChange(e)}
         className={`custom-input-number ${error && "error"}`}
+        useGrouping={false}
       />
       <p className="field-default-value">{defaultValue}</p>
     </div>

@@ -1,13 +1,17 @@
 import { z } from "zod";
 
-const initialValues = {
+// if you want to add more fields to validate add those keys and values each obj in dataFromApi
+// add that field name in fieldsToValidate array
+// create new column in datatable for that field
+
+const dataFromApi = {
   tableItems: [
     {
       id: "1000",
       name: "Bamboo Watch",
-      "fieldOne-1000": 0,
-      "fieldTwo-1000": 0,
-      "fieldThree-1000": 0,
+      fieldOne: 0,
+      fieldTwo: 0,
+      fieldThree: 0,
       defaultValue: {
         fieldOne: 20,
         fieldTwo: 20,
@@ -17,9 +21,9 @@ const initialValues = {
     {
       id: "1001",
       name: "Black Watch",
-      "fieldOne-1001": 0,
-      "fieldTwo-1001": 0,
-      "fieldThree-1001": 0,
+      fieldOne: 0,
+      fieldTwo: 0,
+      fieldThree: 0,
       defaultValue: {
         fieldOne: 10,
         fieldTwo: 13,
@@ -29,9 +33,9 @@ const initialValues = {
     {
       id: "1002",
       name: "Blue Band",
-      "fieldOne-1002": 0,
-      "fieldTwo-1002": 0,
-      "fieldThree-1002": 0,
+      fieldOne: 0,
+      fieldTwo: 0,
+      fieldThree: 0,
       defaultValue: {
         fieldOne: 5,
         fieldTwo: 5,
@@ -41,9 +45,9 @@ const initialValues = {
     {
       id: "1003",
       name: "Blue T-Shirt",
-      "fieldOne-1003": 0,
-      "fieldTwo-1003": 0,
-      "fieldThree-1003": 0,
+      fieldOne: 0,
+      fieldTwo: 0,
+      fieldThree: 0,
       defaultValue: {
         fieldOne: 17,
         fieldTwo: 17,
@@ -53,9 +57,9 @@ const initialValues = {
     {
       id: "1004",
       name: "Bracelet",
-      "fieldOne-1004": 0,
-      "fieldTwo-1004": 0,
-      "fieldThree-1004": 0,
+      fieldOne: 0,
+      fieldTwo: 0,
+      fieldThree: 0,
       defaultValue: {
         fieldOne: 45,
         fieldTwo: 45,
@@ -66,6 +70,29 @@ const initialValues = {
 };
 
 const fieldsToValidate = ["fieldOne", "fieldTwo", "fieldThree"];
+
+const transformApiData = () => {
+  return {
+    tableItems: dataFromApi.tableItems.map((item) => {
+      const { id, ...rest } = item;
+      const transformedFields = {};
+      for (const key in rest) {
+        if (rest.hasOwnProperty(key) && fieldsToValidate.includes(key)) {
+          transformedFields[`${key}-${id}`] = rest[key];
+        } else {
+          transformedFields[key] = rest[key];
+        }
+      }
+      return {
+        id,
+        ...transformedFields,
+      };
+    }),
+  };
+};
+
+const initialValues = transformApiData();
+
 
 const createSchema = (tableItems) => {
   const tableItemSchema = tableItems.map((item) => {
@@ -83,11 +110,11 @@ const createSchema = (tableItems) => {
 };
 
 const calculateSum = (fieldPrefix, formik) => {
-    return formik.values.tableItems.reduce((sum, item) => {
-      const field = `${fieldPrefix}-${item.id}`;
-      const value = item[field];
-      return sum + (isNaN(value) ? 0 : Number(value));
-    }, 0);
-  };
+  return formik.values.tableItems.reduce((sum, item) => {
+    const field = `${fieldPrefix}-${item.id}`;
+    const value = item[field];
+    return sum + (isNaN(value) ? 0 : Number(value));
+  }, 0);
+};
 
 export { initialValues, createSchema, calculateSum, fieldsToValidate };
